@@ -136,6 +136,7 @@ end
 ```
 ＊executeは、user情報を更新する際にconfirmed_atの値を設定するSQL文を直接発行
 ＊add_column,remove_columnなどのRailsがデフォルトで設定しているマイグレーションのメソッドだけではしたいことがしきれない場合、executeメソッドを使用して任意のSQLを実行できます。
+
 3. マイグレーションを実行
 4. letter_opener_webの設定
   - gem'letter_opener_web'をインストール
