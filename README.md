@@ -151,5 +151,12 @@ if Rails.env.development?
   mount LetterOpenerWeb::Engine, at: "/letter_opener"
 end
 ```
+5. すでにUserテーブルのレコードがある場合、エラー回避のため全て消去
+```
+$ rails c
+$ User.delete_all
+```
+6. アプリ上でアカウントを作成すると、[http://localhost:3000/letter_opener]にメールが届くので、そのメールのリンクをクリックするとアカウントが作成される
+7. 
 # 疑問点
 コントローラーのカスタマイズについて、どのようにカスタマイズができるのか？
