@@ -114,7 +114,7 @@ $ rails generate devise:controllers users
 ```
 ## メールアドレス認証による新規登録の実装
 1. [model/user.rb]に`confirmable`モジュールを追加
-2. Confirmableの機能を使うのに必要なカラムの追加
+2. Confirmableの機能を使うのに必要なカラムの追加(devise導入時、マイグレーションする前に「:confirmable」カラムを追加していた場合、以下の処理は不要)
 ```
 $ rails g migration add_confirmable_to_devise
 ```
@@ -138,25 +138,16 @@ end
 ＊add_column,remove_columnなどのRailsがデフォルトで設定しているマイグレーションのメソッドだけではしたいことがしきれない場合、executeメソッドを使用して任意のSQLを実行できます。
 
 3. マイグレーションを実行
-4. letter_opener_webの設定
-  - gem'letter_opener_web'をインストール
-  - [config/environments/development.rb]に追記
+4. sendgridの導入
+# エラー対処
+- アセッツプリコンパイル時に以下のエラー
 ```
-config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-config.action_mailer.delivery_method = :letter_opener_web
+rails aborted!
+Devise.secret_key was not set.
 ```
-  - [config/routes.rb]に追記
+[config/initializers/devise.rb]以下の箇所をコメントアウトを解除
 ```
-if Rails.env.development?
-  mount LetterOpenerWeb::Engine, at: "/letter_opener"
-end
+# config.secret_key = (数字とアルファベットの羅列)
 ```
-5. すでにUserテーブルのレコードがある場合、エラー回避のため全て消去
-```
-$ rails c
-$ User.delete_all
-```
-6. アプリ上でアカウントを作成すると、[http://localhost:3000/letter_opener]にメールが届くので、そのメールのリンクをクリックするとアカウントが作成される
-7. 
 # 疑問点
 コントローラーのカスタマイズについて、どのようにカスタマイズができるのか？
