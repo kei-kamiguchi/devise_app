@@ -169,6 +169,23 @@ if Rails.env.development?
 end
 ```
 
+5. sendgridの導入
+
+# エラー対処
+
+- アセッツプリコンパイル時に以下のエラー
+
+```
+rails aborted!
+Devise.secret_key was not set.
+```
+
+`config/initializers/devise.rb`の以下の箇所をコメントアウトを解除
+
+```
+# config.secret_key = (数字とアルファベットの羅列)
+```
+
 # 管理者権限
 
 ## 方法１：adminカラム
