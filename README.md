@@ -1,12 +1,17 @@
-# devise
-## 導入
+# 導入
+
 1. gem`devise`をインストール
+
 2. deviseの設定ファイルをrailsアプリケーションにインストール
+
 ```
 $ rails g devise:install
 ```
+
 3. `root_path`を設定
+
 4. フラッシュメッセージの設定
+
 ```
 <% if notice %>
   <p class="alert alert-notice"><%= notice %></p>
@@ -15,16 +20,30 @@ $ rails g devise:install
   <p class="alert alert-error"><%= alert %></p>
 <% end %>
 ```
+
 5. deviseに関する一通りのviewsファイルを自動的に作成
+
 ```
 rails g devise:views
 ```
+
 6. Userモデルを作成
+
 ```
 $ rails generate devise user
 ```
+
 7. マイグレーションを実行
-## ヘルパーメソッド
+
+8. リンクの設定
+
+```
+<%= link_to "ログアウト", destroy_user_session_path, method: :delete %>
+<%= link_to "ログイン", new_user_session_path %>
+```
+
+# ヘルパーメソッド
+
 ```
 # ログイン済のユーザーだけにアクセスを許可する場合に使用
 before_action :authenticate_user！
@@ -35,13 +54,11 @@ current_user
 # 現在ログインしているユーザのセッション情報を返すメソッド
 user_session
 ```
-8. リンクの設定
-```
-<%= link_to "ログアウト", destroy_user_session_path, method: :delete %>
-<%= link_to "ログイン", new_user_session_path %>
-```
-## deviseのモジュール
-### デフォルト
+
+# deviseのモジュール
+
+## デフォルト
+
 ```
 database_authenticatable
 # ログイン時のパスワードを暗号化してデータベースに保存する機能
@@ -56,7 +73,9 @@ trackable
 validatable
 # メールアドレスとパスワードに関するデフォルトのバリデーションを提供
 ```
-### 追加モジュール
+
+## 追加モジュール
+
 ```
 lockable
 # サインインに一定回数失敗するとアカウントをロックさせる機能
@@ -67,7 +86,8 @@ timeoutable
 omniauthable
 # OmniAuthサポートする(SNSログインなどに必須)
 ```
-## カラムの追加
+
+# カラムの追加
 
 `app/controllers/application_controller.rb]`
 
@@ -86,8 +106,11 @@ def configure_permitted_parameters
   devise_parameter_sanitizer.permit(:account_update, keys: [:name])
 end
 ```
-## 日本語化
+
+# 日本語化
+
 1. デフォルト言語を日本語に設定
+
 ```
 ~(省略)~
 module DeviseTest
@@ -99,28 +122,42 @@ module DeviseTest
   end
 end
 ```
+
 2. gem`devise-i18n`をインストール
+
 3. devise-i18nのgem本体に存在するビューファイルをすべて自分のプロジェクト内にコピー(辞書ファイルは devise-i18n gem内部にある)
+
 ```
 $ rails g devise:i18n:views
 # 上書きするか？と聞かれているので、キーボードの「y」（yes の意）を押す。これを、同様のメッセージが表示されなくなるまで繰り返す
 ```
+
 4. `devise-i18n`の辞書ファイルを手元で内容を確認したい場合や変更を加えたい場合、以下のコマンドを実行
+
 ```
 $ rails g devise:i18n:locale ja
 ```
-## コントローラーのカスタマイズ
+
+# コントローラーのカスタマイズ
+
 1. deviseのコントローラーをプロジェクト内に生成
+
 ```
 $ rails generate devise:controllers users
 ```
-## メールアドレス認証による新規登録の実装
+
+# メールアドレス認証による新規登録の実装
+
 1. `model/user.rb`に`confirmable`モジュールを追加
+
 2. Confirmableの機能を使うのに必要なカラムの追加(devise導入時、マイグレーションする前に「:confirmable」カラムを追加していた場合、以下の処理は不要)
+
 ```
 $ rails g migration add_confirmable_to_devise
 ```
+
 `db/migrate/xxxxxxxxx_add_confirmable_to_devise.rb`
+
 ```
 def up
   add_column :users, :confirmation_token, :string
@@ -136,6 +173,7 @@ def down
   remove_columns :users, :unconfirmed_email # Only if using reconfirmable
 end
 ```
+
 ＊executeは、user情報を更新する際にconfirmed_atの値を設定するSQL文を直接発行
 ＊add_column,remove_columnなどのRailsがデフォルトで設定しているマイグレーションのメソッドだけではしたいことがしきれない場合、executeメソッドを使用して任意のSQLを実行できます。
 
@@ -150,6 +188,7 @@ end
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 config.action_mailer.delivery_method = :letter_opener_web
 ```
+
   - `config/routes.rb`に追記
   
 ```
@@ -215,27 +254,40 @@ $ rails g rails_admin:install
 ```
 $ rails g cancan:ability
 ```
-rails aborted!
-Devise.secret_key was not set.
-```
-`config/initializers/devise.rb`以下の箇所をコメントアウトを解除
-```
-# config.secret_key = (数字とアルファベットの羅列)
-```
 
-# エラー対処
-
-- アセッツプリコンパイル時に以下のエラー
+3. アクセス権限を設定
 
 ```
-rails aborted!
-Devise.secret_key was not set.
+# 例：管理者のみ管理画面にアクセスを許可
+
+class Ability
+  include CanCan::Ability
+  def initialize(user)
+    if user.try(:admin?)
+      can :access, :rails_admin
+      can :manage, :all
+    end
+  end
+end
 ```
 
-`config/initializers/devise.rb`の以下の箇所をコメントアウトを解除
+4. [config/initializers/rails_admin.rb]の、Deviseとcancanのコメントアウトを外す
 
 ```
-# config.secret_key = (数字とアルファベットの羅列)
+RailsAdmin.config do |config|
+  ### Popular gems integration
+  ## == Devise ==
+  config.authenticate_with do
+    warden.authenticate! scope: :user
+  end
+  config.current_user_method(&:current_user)
+  ## == Cancan ==
+  config.authorize_with :cancan
+  ## == Pundit ==
+  # config.authorize_with :pundit
+  ~(省略)~
+  end
+end
 ```
 
 # 疑問点
