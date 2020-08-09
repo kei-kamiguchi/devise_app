@@ -1,5 +1,6 @@
 # devise
-## 導入
+
+# 導入
 1. gem`devise`をインストール
 2. deviseの設定ファイルをrailsアプリケーションにインストール
 ```
@@ -24,7 +25,8 @@ rails g devise:views
 $ rails generate devise user
 ```
 7. マイグレーションを実行
-## ヘルパーメソッド
+
+# ヘルパーメソッド
 ```
 # ログイン済のユーザーだけにアクセスを許可する場合に使用
 before_action :authenticate_user！
@@ -40,8 +42,10 @@ user_session
 <%= link_to "ログアウト", destroy_user_session_path, method: :delete %>
 <%= link_to "ログイン", new_user_session_path %>
 ```
-## deviseのモジュール
-### デフォルト
+# モジュール
+
+## デフォルト
+
 ```
 database_authenticatable
 # ログイン時のパスワードを暗号化してデータベースに保存する機能
@@ -56,7 +60,9 @@ trackable
 validatable
 # メールアドレスとパスワードに関するデフォルトのバリデーションを提供
 ```
-### 追加モジュール
+
+## 追加モジュール
+
 ```
 lockable
 # サインインに一定回数失敗するとアカウントをロックさせる機能
@@ -67,8 +73,10 @@ timeoutable
 omniauthable
 # OmniAuthサポートする(SNSログインなどに必須)
 ```
-## カラムの追加
-[app/controllers/application_controller.rb]
+
+# カラムの追加
+
+`app/controllers/application_controller.rb`
 ```
 before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -84,7 +92,8 @@ def configure_permitted_parameters
   devise_parameter_sanitizer.permit(:account_update, keys: [:name])
 end
 ```
-## 日本語化
+
+# 日本語化
 1. デフォルト言語を日本語に設定
 ```
 ~(省略)~
@@ -107,18 +116,22 @@ $ rails g devise:i18n:views
 ```
 $ rails g devise:i18n:locale ja
 ```
-## コントローラーのカスタマイズ
+
+# コントローラーのカスタマイズ
+
 1. deviseのコントローラーをプロジェクト内に生成
 ```
 $ rails generate devise:controllers users
 ```
-## メールアドレス認証による新規登録の実装
-1. [model/user.rb]に`confirmable`モジュールを追加
+
+# メールアドレス認証による新規登録の実装
+
+1. `model/user.rb`に`confirmable`モジュールを追加
 2. Confirmableの機能を使うのに必要なカラムの追加
 ```
 $ rails g migration add_confirmable_to_devise
 ```
-[db/migrate/xxxxxxxxx_add_confirmable_to_devise.rb]
+`db/migrate/xxxxxxxxx_add_confirmable_to_devise.rb`
 ```
 def up
   add_column :users, :confirmation_token, :string
@@ -140,16 +153,100 @@ end
 3. マイグレーションを実行
 4. letter_opener_webの設定
   - gem'letter_opener_web'をインストール
-  - [config/environments/development.rb]に追記
+  - `config/environments/development.rb`に追記
 ```
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 config.action_mailer.delivery_method = :letter_opener_web
 ```
-  - [config/routes.rb]に追記
+  - `config/routes.rb`に追記
 ```
 if Rails.env.development?
   mount LetterOpenerWeb::Engine, at: "/letter_opener"
 end
 ```
+
+# 管理者権限
+
+## 方法１：adminカラム
+
+1. usersテーブルにadminカラムを追加
+```
+$ rails g migration add_admin_to_users admin:boolean
+```
+
+2.作成したマイグレーションファイルに、'default: false'を追記
+```
+  def change
+    add_column :users, :admin, :boolean, default: false
+  end
+```
+
+3. マイグレーション
+4. adminカラムを使用した条件分岐
+```
+if current_user.try(:admin?)
+  # 管理者のみ実行できる処理を記述
+end
+```
+
+## 方法２：rails_admin
+
+1. gem 'rails_admin', '~> 2.0'をインストール
+
+2. rails_adminの初期設定
+```
+$ rails g rails_admin:install
+```
+
+3. rails_adminの日本語化
+[ここ](https://gist.github.com/mshibuya/1662352)にアクセスし、内容を全てコピー
+
+4. `config/locales/rails_admin.ja.yml`ファイルを作成し、コピーした内容をペースト
+
+5. 以下にアクセスすることで管理者画面を表示
+[http://localhost:3000/admin]
+
+# アクセス権限
+
+1. gem `cancancan`をインストール
+
+2. Abilityモデルを作成
+```
+$ rails g cancan:ability
+```
+
+3. アクセス権限を設定
+```
+# 例：管理者のみ管理画面にアクセスを許可
+
+class Ability
+  include CanCan::Ability
+  def initialize(user)
+    if user.try(:admin?)
+      can :access, :rails_admin
+      can :manage, :all
+    end
+  end
+end
+```
+
+4. [config/initializers/rails_admin.rb]の、Deviseとcancanのコメントアウトを外す
+```
+RailsAdmin.config do |config|
+  ### Popular gems integration
+  ## == Devise ==
+  config.authenticate_with do
+    warden.authenticate! scope: :user
+  end
+  config.current_user_method(&:current_user)
+  ## == Cancan ==
+  config.authorize_with :cancan
+  ## == Pundit ==
+  # config.authorize_with :pundit
+  ~(省略)~
+  end
+end
+```
+
 # 疑問点
 コントローラーのカスタマイズについて、どのようにカスタマイズができるのか？
