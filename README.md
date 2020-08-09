@@ -209,11 +209,11 @@ $ rails g rails_admin:install
 
 3. rails_adminの日本語化
 
-[ここ](https://gist.github.com/mshibuya/1662352)にアクセスし、内容を全てコピー
+- [ここ](https://gist.github.com/mshibuya/1662352)にアクセスし、内容を全てコピー
 
-4. `config/locales/rails_admin.ja.yml`ファイルを作成し、コピーした内容をペースト
+-  `config/locales/rails_admin.ja.yml`ファイルを作成し、コピーした内容をペースト
 
-5. [ここ](http://localhost:3000/admin)にアクセスすることで管理者画面を表示
+4. [ここ](http://localhost:3000/admin)にアクセスすることで管理者画面を表示
 
 # アクセス権限
 
