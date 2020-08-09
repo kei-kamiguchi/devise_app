@@ -179,7 +179,7 @@ end
 $ rails g migration add_admin_to_users admin:boolean
 ```
 
-2.作成したマイグレーションファイルに、'default: false'を追記
+2. 作成したマイグレーションファイルに、'default: false'を追記
 
 ```
   def change
