@@ -68,7 +68,9 @@ omniauthable
 # OmniAuthサポートする(SNSログインなどに必須)
 ```
 ## カラムの追加
-[app/controllers/application_controller.rb]
+
+`app/controllers/application_controller.rb]`
+
 ```
 before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -113,12 +115,12 @@ $ rails g devise:i18n:locale ja
 $ rails generate devise:controllers users
 ```
 ## メールアドレス認証による新規登録の実装
-1. [model/user.rb]に`confirmable`モジュールを追加
+1. `model/user.rb`に`confirmable`モジュールを追加
 2. Confirmableの機能を使うのに必要なカラムの追加(devise導入時、マイグレーションする前に「:confirmable」カラムを追加していた場合、以下の処理は不要)
 ```
 $ rails g migration add_confirmable_to_devise
 ```
-[db/migrate/xxxxxxxxx_add_confirmable_to_devise.rb]
+`db/migrate/xxxxxxxxx_add_confirmable_to_devise.rb`
 ```
 def up
   add_column :users, :confirmation_token, :string
@@ -216,7 +218,7 @@ $ rails g cancan:ability
 rails aborted!
 Devise.secret_key was not set.
 ```
-[config/initializers/devise.rb]以下の箇所をコメントアウトを解除
+`config/initializers/devise.rb`以下の箇所をコメントアウトを解除
 ```
 # config.secret_key = (数字とアルファベットの羅列)
 ```
