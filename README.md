@@ -151,14 +151,18 @@ end
 ＊add_column,remove_columnなどのRailsがデフォルトで設定しているマイグレーションのメソッドだけではしたいことがしきれない場合、executeメソッドを使用して任意のSQLを実行できます。
 
 3. マイグレーションを実行
+
 4. letter_opener_webの設定
+
   - gem'letter_opener_web'をインストール
   - `config/environments/development.rb`に追記
+  
 ```
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 config.action_mailer.delivery_method = :letter_opener_web
 ```
   - `config/routes.rb`に追記
+  
 ```
 if Rails.env.development?
   mount LetterOpenerWeb::Engine, at: "/letter_opener"
@@ -170,11 +174,13 @@ end
 ## 方法１：adminカラム
 
 1. usersテーブルにadminカラムを追加
+
 ```
 $ rails g migration add_admin_to_users admin:boolean
 ```
 
 2.作成したマイグレーションファイルに、'default: false'を追記
+
 ```
   def change
     add_column :users, :admin, :boolean, default: false
@@ -182,7 +188,9 @@ $ rails g migration add_admin_to_users admin:boolean
 ```
 
 3. マイグレーション
+
 4. adminカラムを使用した条件分岐
+
 ```
 if current_user.try(:admin?)
   # 管理者のみ実行できる処理を記述
@@ -194,28 +202,31 @@ end
 1. gem 'rails_admin', '~> 2.0'をインストール
 
 2. rails_adminの初期設定
+
 ```
 $ rails g rails_admin:install
 ```
 
 3. rails_adminの日本語化
+
 [ここ](https://gist.github.com/mshibuya/1662352)にアクセスし、内容を全てコピー
 
 4. `config/locales/rails_admin.ja.yml`ファイルを作成し、コピーした内容をペースト
 
-5. 以下にアクセスすることで管理者画面を表示
-[http://localhost:3000/admin]
+5. [ここ](http://localhost:3000/admin)にアクセスすることで管理者画面を表示
 
 # アクセス権限
 
 1. gem `cancancan`をインストール
 
 2. Abilityモデルを作成
+
 ```
 $ rails g cancan:ability
 ```
 
 3. アクセス権限を設定
+
 ```
 # 例：管理者のみ管理画面にアクセスを許可
 
@@ -231,6 +242,7 @@ end
 ```
 
 4. [config/initializers/rails_admin.rb]の、Deviseとcancanのコメントアウトを外す
+
 ```
 RailsAdmin.config do |config|
   ### Popular gems integration
