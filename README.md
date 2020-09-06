@@ -13,29 +13,19 @@ $ rails g devise:install
 4. フラッシュメッセージの設定
 
 ```
-<% if notice %>
-  <p class="alert alert-notice"><%= notice %></p>
-<% end %>
-<% if alert %>
-  <p class="alert alert-error"><%= alert %></p>
-<% end %>
+<p class="notice"><%= notice %></p>
+<p class="alert"><%= alert %></p>
 ```
 
-5. deviseに関する一通りのviewsファイルを自動的に作成
-
-```
-rails g devise:views
-```
-
-6. Userモデルを作成
+5. Userモデルを作成
 
 ```
 $ rails generate devise user
 ```
 
-7. マイグレーションを実行
+6. マイグレーションを実行
 
-8. リンクの設定
+7. リンクの設定
 
 ```
 <%= link_to "ログアウト", destroy_user_session_path, method: :delete %>
@@ -136,6 +126,13 @@ $ rails g devise:i18n:views
 
 ```
 $ rails g devise:i18n:locale ja
+```
+# ビューのカスタマイズ
+
+1. deviseのビューをプロジェクト内に生成
+
+```
+rails g devise:views
 ```
 
 # コントローラーのカスタマイズ
