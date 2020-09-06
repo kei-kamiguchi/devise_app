@@ -197,8 +197,6 @@ if Rails.env.development?
 end
 ```
 
-5. sendgridの導入
-
 # 管理者権限
 
 ## 方法１：adminカラム
